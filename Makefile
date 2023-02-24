@@ -29,23 +29,26 @@ LDFLAGS+=	`pkg-config --libs ${PKGLIBS}`
 #CFLAGS+=	-g
 
 BINDIR=		$(PREFIX)/bin
+MANDIR=		${PREFIX}/man/man1
 
 SRC=		tpadnav.c
 
 OBJ=		${SRC:.c=.o}
 
 BIN=		tpadnav
+MAN=		tpadnav.1
 
 all: $(BIN)
 
-$(OBJ):		Makefile
+$(OBJ): Makefile
 
 $(BIN): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 install: all
-	mkdir -p $(BINDIR) $(MANDIR)
+	mkdir -p $(DESTDIR)$(BINDIR) $(DESTDIR)$(MANDIR)
 	install -s $(BIN) $(BINDIR)
+	install -m 644 $(MAN) $(DESTDIR)$(MANDIR)/$(MAN)
 
 clean:
 	rm -f $(BIN) $(OBJ)
