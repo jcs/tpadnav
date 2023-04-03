@@ -22,16 +22,16 @@ and
 keyboard events with the XTest extension.
 Button events are throttled to only generate a keyboard event every
 .Ar interval
-second.
+milliseconds.
 .Sh OPTIONS
 .Bl -tag -width Ds
 .It Fl d Ar display
 Use a different X11 display named
 .Ar display .
 .It Fl i Ar interval
-Allow a keyboard event to be generated every 
+Allow a keyboard event to be generated every
 .Ar interval
-seconds instead of the default 1.
+milliseconds instead of the default 750.
 .It Fl v
 Be verbose in reporting activity.
 .El

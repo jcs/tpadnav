@@ -14,7 +14,7 @@ gestures on a touchpad to navigate backward and forward.
 
 Since these button events are generated many times along a two-finger swipe,
 this program throttles its output and only generates one back or forward key
-per 1 second (configurable with the `-i` option).
+per 750 milliseconds (configurable with the `-i` option).
 
 ## License
 

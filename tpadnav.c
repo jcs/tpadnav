@@ -29,8 +29,8 @@
 #define BUTTON_SWIPE_LEFT	6
 #define BUTTON_SWIPE_RIGHT	7
 
-/* one swipe per this many seconds will be recognized, overridable with -i */
-#define MIN_SWIPE_SECS		1
+/* one swipe per this many ms will be recognized, overridable with -i */
+#define MIN_SWIPE_MSECS		750
 
 extern char *__progname;
 
@@ -71,8 +71,8 @@ main(int argc, char* argv[])
 	struct timeval now, last_swipe = { 0 };
 	char *display = NULL;
 	unsigned long screen, delta_msec;
+	unsigned long min_swipe_msecs = MIN_SWIPE_MSECS;
 	int ch, send_key, ndevices, n, j, nevents = 0, was_nevents;
-	int min_swipe_secs = MIN_SWIPE_SECS;
 
 	while ((ch = getopt(argc, argv, "d:i:v")) != -1) {
 		switch (ch) {
@@ -80,7 +80,7 @@ main(int argc, char* argv[])
 			display = optarg;
 			break;
 		case 'i':
-			min_swipe_secs = atoi(optarg);
+			min_swipe_msecs = atol(optarg);
 			break;
 		case 'v':
 			verbose++;
@@ -160,6 +160,8 @@ main(int argc, char* argv[])
 
 	VPRINTF("listening for buttons...\n");
 
+	gettimeofday(&last_swipe, NULL);
+
 	for (;;) {
 		XNextEvent(dpy, &event);
 
@@ -175,14 +177,10 @@ main(int argc, char* argv[])
 
 		gettimeofday(&now, NULL);
 
-		if (last_swipe.tv_sec == 0)
-			delta_msec = min_swipe_secs * 2000;
-		else {
-			delta_msec = (now.tv_sec - last_swipe.tv_sec) * 1000;
-			delta_msec += (now.tv_usec - last_swipe.tv_usec) / 1000;
-		}
+		delta_msec = (now.tv_sec - last_swipe.tv_sec) * 1000;
+		delta_msec += (now.tv_usec - last_swipe.tv_usec) / 1000;
 
-		if (delta_msec < (min_swipe_secs * 1000)) {
+		if (delta_msec < min_swipe_msecs) {
 			VPRINTF("swipe too soon (%ld msec), ignoring\n",
 			    delta_msec);
 			continue;
@@ -193,11 +191,13 @@ main(int argc, char* argv[])
 		switch (bevent->button) {
 		case BUTTON_SWIPE_LEFT:
 			send_key = code_back;
-			VPRINTF("swiped left, sending back\n");
+			VPRINTF("swiped left after %ld msec, sending back\n",
+			    delta_msec);
 			break;
 		case BUTTON_SWIPE_RIGHT:
 			send_key = code_forward;
-			VPRINTF("swiped right, sending forward\n");
+			VPRINTF("swiped right after %ld msec, sending "
+			    "forward\n", delta_msec);
 			break;
 		default:
 			continue;
