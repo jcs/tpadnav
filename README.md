@@ -1,7 +1,7 @@
 # tpadnav
 
 OpenBSD's
-[wmsouse (wstpad)](http://man.openbsd.org/wsmouse)
+[wsmouse (wstpad)](http://man.openbsd.org/wsmouse)
 driver for touchpads recognizes two-finger scrolling left and right and
 generates mouse button 6 and 7 events (as well as 4 and 5 for scrolling up and
 down).
